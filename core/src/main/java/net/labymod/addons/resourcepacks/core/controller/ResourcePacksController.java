@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import net.labymod.addons.resourcepacks.core.controller.ResourcePackFeed.Type;
 import net.labymod.addons.resourcepacks.core.controller.adapter.ResourcePackTagAdapter;
-import net.labymod.addons.resourcepacks.core.controller.models.ResourcePack;
+import net.labymod.addons.resourcepacks.core.controller.models.OnlineResourcePack;
 import net.labymod.api.util.gson.UUIDTypeAdapter;
 import net.labymod.api.util.io.web.request.Callback;
 import net.labymod.api.util.io.web.request.Request;
@@ -41,9 +41,9 @@ public class ResourcePacksController {
 
   public void load(
       String url,
-      Callback<List<ResourcePack>> callback
+      Callback<List<OnlineResourcePack>> callback
   ) {
-    Request.ofGsonList(ResourcePack.class, () -> GSON)
+    Request.ofGsonList(OnlineResourcePack.class, () -> GSON)
         .url(url)
         .addHeader("RP24-Token", API_KEY)
         .execute(callback);

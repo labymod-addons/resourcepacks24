@@ -9,7 +9,7 @@ import net.labymod.addons.resourcepacks.core.controller.adapter.ResourcePackTagA
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.icon.Icon;
 
-public class ResourcePack {
+public class OnlineResourcePack {
 
   private int size;
   private String thumbnail;

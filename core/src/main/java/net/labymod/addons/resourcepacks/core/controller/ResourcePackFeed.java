@@ -2,7 +2,7 @@ package net.labymod.addons.resourcepacks.core.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.labymod.addons.resourcepacks.core.controller.models.ResourcePack;
+import net.labymod.addons.resourcepacks.core.controller.models.OnlineResourcePack;
 import net.labymod.addons.resourcepacks.core.util.callback.CachedCallbackCollection;
 import net.labymod.api.util.io.web.result.Result;
 import net.labymod.api.util.io.web.result.ResultCallback;
@@ -63,7 +63,7 @@ public class ResourcePackFeed {
         return;
       }
 
-      List<ResourcePack> resourcePacks = result.get();
+      List<OnlineResourcePack> resourcePacks = result.get();
       int size = resourcePacks.size();
       if (size == 0) {
         this.lastPage = page - 1;

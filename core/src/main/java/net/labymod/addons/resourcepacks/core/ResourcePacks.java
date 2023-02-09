@@ -1,6 +1,6 @@
 package net.labymod.addons.resourcepacks.core;
 
-import net.labymod.addons.resourcepacks.core.activity.ResourcepacksOverlay;
+import net.labymod.addons.resourcepacks.core.activity.ResourcePacksOverlay;
 import net.labymod.addons.resourcepacks.core.controller.ResourcePacksController;
 import net.labymod.api.Laby;
 import net.labymod.api.addon.LabyAddon;
@@ -9,7 +9,7 @@ import net.labymod.api.client.resources.ResourceLocation;
 import net.labymod.api.models.addon.annotation.AddonMain;
 
 @AddonMain
-public class ResourcePacks extends LabyAddon<ResourcepacksConfiguration> {
+public class ResourcePacks extends LabyAddon<ResourcePacksConfiguration> {
 
   public static final ResourceLocation FALLBACK_ICON = Laby.references()
       .resourceLocationFactory()
@@ -23,13 +23,13 @@ public class ResourcePacks extends LabyAddon<ResourcepacksConfiguration> {
 
     this.labyAPI().activityOverlayRegistry().register(
         NamedScreen.RESOURCE_PACK_SETTINGS,
-        ResourcepacksOverlay.class,
-        parentScreen -> new ResourcepacksOverlay(parentScreen, this, controller)
+        ResourcePacksOverlay.class,
+        parentScreen -> new ResourcePacksOverlay(parentScreen, this, controller)
     );
   }
 
   @Override
-  protected Class<ResourcepacksConfiguration> configurationClass() {
-    return ResourcepacksConfiguration.class;
+  protected Class<ResourcePacksConfiguration> configurationClass() {
+    return ResourcePacksConfiguration.class;
   }
 }

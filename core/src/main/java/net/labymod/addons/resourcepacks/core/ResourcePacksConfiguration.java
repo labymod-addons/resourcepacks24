@@ -7,7 +7,7 @@ import net.labymod.api.configuration.loader.property.ConfigProperty;
 
 @SuppressWarnings("FieldMayBeFinal")
 @ConfigName("settings")
-public class ResourcepacksConfiguration extends AddonConfig {
+public class ResourcePacksConfiguration extends AddonConfig {
 
   @SwitchSetting
   private final ConfigProperty<Boolean> enabled = new ConfigProperty<>(true);

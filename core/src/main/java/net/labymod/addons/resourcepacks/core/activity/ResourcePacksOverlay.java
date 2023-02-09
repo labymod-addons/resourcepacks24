@@ -5,7 +5,7 @@ import net.labymod.addons.resourcepacks.core.ResourcePacks;
 import net.labymod.addons.resourcepacks.core.controller.ResourcePackFeed;
 import net.labymod.addons.resourcepacks.core.controller.ResourcePackPage;
 import net.labymod.addons.resourcepacks.core.controller.ResourcePacksController;
-import net.labymod.addons.resourcepacks.core.controller.models.ResourcePack;
+import net.labymod.addons.resourcepacks.core.controller.models.OnlineResourcePack;
 import net.labymod.addons.resourcepacks.core.widgets.GridFeedWidget;
 import net.labymod.addons.resourcepacks.core.widgets.resourcepacks.OnlineResourcePackWidget;
 import net.labymod.api.client.gui.screen.LabyScreen;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 @AutoActivity
 @Link("resourcepacks.lss")
-public class ResourcepacksOverlay extends AbstractLayerActivity {
+public class ResourcePacksOverlay extends AbstractLayerActivity {
 
   private final ResourcePacks resourcePacks;
   private final ResourcePacksController controller;
@@ -30,7 +30,7 @@ public class ResourcepacksOverlay extends AbstractLayerActivity {
   private final ResourcePackFeed feed;
   private int page = 1;
 
-  public ResourcepacksOverlay(ScreenInstance parentScreen, ResourcePacks resourcePacks,
+  public ResourcePacksOverlay(ScreenInstance parentScreen, ResourcePacks resourcePacks,
       ResourcePacksController controller) {
     super(parentScreen);
 
@@ -72,7 +72,7 @@ public class ResourcepacksOverlay extends AbstractLayerActivity {
 
   @Override
   public <T extends LabyScreen> @Nullable T renew() {
-    return new ResourcepacksOverlay(this.parentScreen, this.resourcePacks,
+    return new ResourcePacksOverlay(this.parentScreen, this.resourcePacks,
         this.controller).generic();
   }
 
@@ -95,7 +95,7 @@ public class ResourcepacksOverlay extends AbstractLayerActivity {
   }
 
   private void load(GridFeedWidget feedWidget, ResourcePackPage resourcePackPage) {
-    for (ResourcePack resourcePack : resourcePackPage.getResourcePacks()) {
+    for (OnlineResourcePack resourcePack : resourcePackPage.getResourcePacks()) {
       OnlineResourcePackWidget resourcePackWidget = new OnlineResourcePackWidget(resourcePack);
       resourcePackWidget.addId("resourcepack");
 
