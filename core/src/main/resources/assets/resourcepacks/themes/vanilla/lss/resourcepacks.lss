@@ -1,0 +1,55 @@
+.wrapper {
+  left: 22;
+  top: 33;
+  width: 240;
+  height: 420;
+  background-color: dark_red;
+
+  Scroll {
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    .feed {
+      left: 0;
+      top: 0;
+      right: 0;
+      height: fit-content;
+      space-between-entries: 2;
+
+      tiles-per-line: 1;
+      tile-height: 32;
+
+      OnlineResourcePack {
+        background-color: red;
+
+        .icon {
+          left: 0;
+          top: 0;
+          height: 100%;
+          width: height;
+        }
+
+        .content {
+          left: 32;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          padding-left: 2;
+          background-color: blue;
+
+          .name {
+            max-width: 100%;
+            overflow-strategy: clip;
+          }
+        }
+      }
+    }
+
+    Scrollbar {
+      width: 3;
+      margin-left: 2;
+    }
+  }
+}

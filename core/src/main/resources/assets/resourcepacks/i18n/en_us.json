@@ -1,7 +1,7 @@
 {
-  "example": {
+  "resourcepacks": {
     "settings": {
-      "name": "ExampleAddon",
+      "name": "Resourcepacks24",
       "enabled": {
         "name": "Enabled"
       }

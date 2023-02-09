@@ -1,4 +1,4 @@
-rootProject.name = "labymod4-addon-template"
+rootProject.name = "resourcepacks24"
 
 pluginManagement {
     val labyGradlePluginVersion = "0.3.11"
@@ -11,6 +11,7 @@ pluginManagement {
             maven("https://dist.labymod.net/api/v1/maven/release/")
             maven("https://repo.spongepowered.org/repository/maven-public")
             mavenCentral()
+            mavenLocal()
         }
 
         dependencies {
