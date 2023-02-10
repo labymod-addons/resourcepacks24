@@ -13,7 +13,7 @@ labyMod {
     defaultPackageName = "net.labymod.addons.resourcepacks" //change this to your main package name (used by all modules)
     addonInfo {
         namespace = "resourcepacks"
-        displayName = "Resourcepacks24"
+        displayName = "ResourcePacks"
         author = "LabyMedia GmbH"
         minecraftVersion = "*"
         version = System.getenv().getOrDefault("VERSION", "0.0.1")
@@ -23,11 +23,12 @@ labyMod {
         registerVersions(
                 "1.8.9",
                 "1.12.2",
+                "1.16.5",
                 "1.17.1",
                 "1.18.2",
                 "1.19.2",
                 "1.19.3",
-                "23w05a"
+                "23w06a"
         ) { version, provider ->
             configureRun(provider, version)
         }

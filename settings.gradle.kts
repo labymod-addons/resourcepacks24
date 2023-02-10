@@ -1,4 +1,4 @@
-rootProject.name = "resourcepacks24"
+rootProject.name = "resourcepacks"
 
 pluginManagement {
     val labyGradlePluginVersion = "0.3.11"
