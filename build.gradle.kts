@@ -2,6 +2,7 @@ plugins {
     id("java-library")
     id("net.labymod.gradle")
     id("net.labymod.gradle.addon")
+    id("org.cadixdev.licenser") version ("0.6.1")
 }
 
 group = "org.example"
@@ -12,8 +13,8 @@ java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 labyMod {
     defaultPackageName = "net.labymod.addons.resourcepacks" //change this to your main package name (used by all modules)
     addonInfo {
-        namespace = "resourcepacks"
-        displayName = "ResourcePacks"
+        namespace = "resourcepackstwentyfour"
+        displayName = "ResourcePacks24"
         author = "LabyMedia GmbH"
         minecraftVersion = "*"
         version = System.getenv().getOrDefault("VERSION", "0.0.1")
@@ -49,11 +50,17 @@ subprojects {
     plugins.apply("java-library")
     plugins.apply("net.labymod.gradle")
     plugins.apply("net.labymod.gradle.addon")
+    plugins.apply("org.cadixdev.licenser")
 
     repositories {
         maven("https://libraries.minecraft.net/")
         maven("https://repo.spongepowered.org/repository/maven-public/")
         mavenLocal()
+    }
+
+    license {
+        header(rootProject.file("gradle/LICENSE-HEADER.txt"))
+        newLine.set(true)
     }
 }
 

@@ -5,6 +5,34 @@
       "enabled": {
         "name": "Enabled"
       }
+    },
+    "browse": {
+      "information": {
+        "invalidResponse": "We tried but Resourcepacks24 did not respond with something that we can display here. Please contact their support.",
+        "loading": "Loading..."
+      },
+      "feed": {
+        "trending": "Trending",
+        "topOfTheWeek": "Top of the Week",
+        "promoted": "Promoted",
+        "new": "New",
+        "random": "Random",
+        "splitter": "Categories",
+        "category": {
+          "pvp": "PvP",
+          "realistic": "Realistic",
+          "default": "Default-Style",
+          "modern": "Modern",
+          "simplistic": "Simplistic",
+          "cartoon": "Cartoon",
+          "themed": "Themed",
+          "fpsboost": "FPS Boost",
+          "animated": "Animated",
+          "modsupport": "Mod Support",
+          "sound": "Sound",
+          "other": "Other"
+        }
+      }
     }
   }
 }

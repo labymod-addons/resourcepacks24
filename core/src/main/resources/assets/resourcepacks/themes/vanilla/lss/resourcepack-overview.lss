@@ -1,0 +1,272 @@
+.browse-button {
+  left: calc(50% - 205);
+  bottom: 28;
+  padding-left: 6;
+  padding-right: 6;
+}
+
+.overlay-wrapper {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  renderer: "DirtBackground";
+  background-dirt-brightness: 64;
+  background-always-dirt: true;
+
+  .inner-overlay-wrapper {
+    left: 50%;
+    top: 30;
+    bottom: 10;
+    width: 90%;
+    max-width: 420;
+
+    alignment-x: center;
+    renderer: "Window";
+
+    .browse-header {
+      left: 8;
+      top: 2;
+      right: 8;
+      height: 14;
+
+      .title-wrapper {
+        width: fit-content;
+        height: fit-content;
+
+        Component {
+          left: 0;
+          top: 0;
+        }
+      }
+
+      .close-button {
+        alignment: right;
+        margin-top: 1;
+        width: 8;
+        height: 8;
+        color: dark_red;
+
+        &:hover {
+          color: red;
+        }
+      }
+    }
+
+    .browse-wrapper {
+      left: 8;
+      top: 16;
+      right: 8;
+      bottom: 8;
+
+      BrowseResourcePacks {
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+
+        orientation: horizontal;
+      }
+    }
+  }
+}
+
+.browse-container {
+  .information {
+    left: 50%;
+    top: 35%;
+    alignment-x: center;
+    alignment-y: center;
+    text-color: red;
+    height: fit-content;
+    width: 90%;
+  }
+
+  Scroll {
+    .feed {
+      height: fit-content;
+      tiles-per-line: 1;
+      tile-height: 34;
+      space-between-entries: 2;
+    }
+
+    Scrollbar {
+      width: 3;
+      margin-left: 2;
+    }
+  }
+}
+
+ResourcePackInfo {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  .container {
+    height: fit-content;
+
+    .details-container {
+      height: 100;
+
+      .icon {
+        height: 64;
+        width: 64;
+        left: 15;
+        bottom: 5;
+      }
+
+      .details-info-wrapper {
+        left: 85;
+        right: 20;
+        bottom: 5;
+        height: 64;
+
+        .details-info-container {
+          left: 0;
+          right: 0;
+          top: 50%;
+          alignment-y: center;
+          height: fit-content;
+
+          .description {
+            font-size: small;
+          }
+        }
+      }
+    }
+
+    .misc-container {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 36;
+      layout: spread;
+      padding-left: 10;
+      padding-right: 10;
+
+      Misc {
+        alignment: center;
+        top: 0;
+        left: 0;
+        height: 20;
+        width: fit-content;
+        space-between-entries: 2;
+
+        Icon {
+          top: 0;
+          left: 0;
+          height: 80%;
+          width: height;
+        }
+
+        VerticalList {
+          top: 0;
+          left: 0;
+          height: fit-content;
+          width: fit-content;
+
+          .misc-title {
+            top: 0;
+            left: 0;
+            font-weight: 400;
+            font-size: small;
+            text-color: gray;
+          }
+
+          .misc-value {
+            top: 0;
+            left: 0;
+            margin-top: 1;
+            font-size: medium;
+            text-color: rgb(220, 220, 220);
+          }
+        }
+      }
+    }
+  }
+
+  .description-title, .screenshots-title {
+    font-weight: 400;
+    margin-bottom: 2;
+    text-color: gold;
+  }
+
+  .description {
+    margin-bottom: 5;
+    margin-bottom: 5;
+  }
+
+  .screenshots-container {
+    height: fit-content;
+    width: 100%;
+
+    Icon {
+      height: fit-content;
+    }
+  }
+
+  .top-container {
+    left: 7;
+    top: 7;
+    right: 7;
+    height: 20;
+
+    .back-button {
+      left: 0;
+      top: 0;
+      width: 20;
+      padding-right: 0;
+      padding-left: 0;
+
+      Icon {
+        height: 8 !important;
+        width: 8 !important;
+      }
+    }
+
+    .download-button {
+      right: 0;
+      top: 0;
+
+      min-width: 70;
+      width: fit-content;
+      max-width: 100;
+    }
+  }
+}
+
+Scroll {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2;
+}
+
+ResourcePackSidebar {
+  width: 114;
+  height: 100%;
+
+  Scroll {
+    .sidebar-container {
+      height: fit-content;
+      padding: 4;
+
+      .search {
+        margin-bottom: 7;
+      }
+
+      .splitter {
+        alignment-x: center;
+        padding-top: 5;
+        padding-bottom: 1;
+      }
+    }
+
+    Scrollbar {
+      width: 1;
+    }
+  }
+}

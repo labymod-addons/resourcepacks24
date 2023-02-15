@@ -1,0 +1,61 @@
+ResourcePack {
+  background-color: rgba(26, 26, 26, 0.5);
+
+  .cover {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: height;
+    margin: 1;
+    cleanup-on-dispose: true;
+
+    .cover-info {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: fit-content;
+      background-color: rgba(15, 15, 15, 0.4);
+      padding: 1;
+
+      .size {
+        top: -1;
+        left: 0;
+        font-size: small;
+      }
+    }
+  }
+
+  .container {
+    left: 32;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: 1 1 1 2;
+    space-between-entries: 2;
+
+    .header {
+      left: 0;
+      right: 0;
+      height: fit-content;
+      orientation: horizontal;
+
+      .name {
+        max-width: 100%;
+        overflow-strategy: clip;
+      }
+    }
+
+    .description {
+      max-width: 99%;
+      max-lines: 2;
+      overflow-strategy: wrap;
+      line-spacing: 1;
+      text-color: gray;
+      font-size: 0.70;
+    }
+  }
+
+  &:hover {
+    background-color: rgba(33, 33, 33, 0.5);
+  }
+}
