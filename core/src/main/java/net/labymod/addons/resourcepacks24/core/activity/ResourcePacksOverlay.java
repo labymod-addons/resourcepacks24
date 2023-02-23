@@ -66,7 +66,7 @@ public class ResourcePacksOverlay extends AbstractLayerActivity {
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
-    ButtonWidget browseButton = ButtonWidget.text("Browse");
+    ButtonWidget browseButton = ButtonWidget.i18n("resourcepackstwentyfour.browse.button");
     browseButton.addId("browse-button");
     browseButton.setPressable(() -> {
       this.overlayVisible = !this.overlayVisible;
@@ -90,7 +90,7 @@ public class ResourcePacksOverlay extends AbstractLayerActivity {
     DivWidget titleWrapper = new DivWidget();
     titleWrapper.addId("title-wrapper");
 
-    ComponentWidget title = ComponentWidget.i18n("resourcepacks.settings.name");
+    ComponentWidget title = ComponentWidget.i18n("resourcepackstwentyfour.settings.name");
     title.addId("title");
     titleWrapper.addChild(title);
     browseHeader.addEntry(titleWrapper);

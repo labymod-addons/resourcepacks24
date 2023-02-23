@@ -19,6 +19,8 @@ package net.labymod.addons.resourcepacks24.core.controller;
 import java.util.ArrayList;
 import java.util.List;
 import net.labymod.addons.resourcepacks24.core.controller.models.OnlineResourcePack;
+import net.labymod.addons.resourcepacks24.core.util.ResourcePackPageResult;
+import net.labymod.api.client.component.Component;
 
 /**
  * Well, this is needed as for example the random resourcepacks endpoint returns an array of
@@ -39,14 +41,14 @@ public class ResourcePackUglyFeed extends ResourcePackFeed {
   }
 
   @Override
-  protected ResourcePackPage toPage(
+  protected ResourcePackPageResult toPage(
       int pageNumber,
       int size,
       List<OnlineResourcePack> resourcePacks
   ) {
     List<OnlineResourcePack> resourcePackPage = new ArrayList<>();
-    ResourcePackPage desiredPage = null;
-    ResourcePackPage lastPage = null;
+    ResourcePackPageResult desiredPage = null;
+    ResourcePackPageResult lastPage = null;
 
     int lastIndex = resourcePacks.size() - 1;
     for (int i = 0; i <= lastIndex; i++) {
@@ -56,11 +58,13 @@ public class ResourcePackUglyFeed extends ResourcePackFeed {
       if (currentPageSize == 20 || i == lastIndex) {
         ResourcePackPage page = new ResourcePackPage(pageNumber, currentPageSize);
         page.putAll(resourcePackPage);
-        lastPage = page;
+
+        ResourcePackPageResult result = ResourcePackPageResult.of(page, pageNumber);
+        lastPage = result;
         if (desiredPage == null) {
-          desiredPage = page;
+          desiredPage = result;
         } else {
-          this.pages.add(page);
+          this.pages.add(result);
         }
 
         resourcePackPage.clear();
@@ -69,13 +73,16 @@ public class ResourcePackUglyFeed extends ResourcePackFeed {
     }
 
     if (lastPage == null) {
-      lastPage = new ResourcePackPage(pageNumber, 0);
+      lastPage = ResourcePackPageResult.ofMessage(
+          Component.text("No resourcepacks found"),
+          pageNumber
+      );
+
       desiredPage = lastPage;
     }
 
     // set the last page so the same response isn't retrieved multiple times.
     this.lastPage = lastPage.getNumber();
-
     return desiredPage;
   }
 }

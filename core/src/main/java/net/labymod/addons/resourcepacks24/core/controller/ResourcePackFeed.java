@@ -22,16 +22,16 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import net.labymod.addons.resourcepacks24.core.controller.models.OnlineResourcePack;
+import net.labymod.addons.resourcepacks24.core.util.ResourcePackPageCallback;
+import net.labymod.addons.resourcepacks24.core.util.ResourcePackPageResult;
 import net.labymod.addons.resourcepacks24.core.util.callback.CachedCallbackCollection;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.util.TextFormat;
-import net.labymod.api.util.io.web.result.Result;
-import net.labymod.api.util.io.web.result.ResultCallback;
 
 public class ResourcePackFeed {
 
-  protected final List<ResourcePackPage> pages;
-  protected final CachedCallbackCollection<ResultCallback<ResourcePackPage>> callbacks;
+  protected final List<ResourcePackPageResult> pages;
+  protected final CachedCallbackCollection<ResourcePackPageCallback> callbacks;
   protected final String translationKey;
   private final ResourcePacksController controller;
   private final Type type;
@@ -50,12 +50,12 @@ public class ResourcePackFeed {
     this.callbacks = CachedCallbackCollection.create();
   }
 
-  public ResourcePackPage getPage(int page) {
+  public ResourcePackPageResult getPage(int page) {
     if (page < 1 || (this.lastPage != -1 && page > this.lastPage)) {
       return null;
     }
 
-    for (ResourcePackPage resourcePackPage : this.pages) {
+    for (ResourcePackPageResult resourcePackPage : this.pages) {
       if (resourcePackPage.getNumber() == page) {
         return resourcePackPage;
       }
@@ -64,8 +64,8 @@ public class ResourcePackFeed {
     return null;
   }
 
-  public ResourcePackPage getOrLoadPage(int page, ResultCallback<ResourcePackPage> callback) {
-    ResourcePackPage cachedPage = this.getPage(page);
+  public ResourcePackPageResult getOrLoadPage(int page, ResourcePackPageCallback callback) {
+    ResourcePackPageResult cachedPage = this.getPage(page);
     if (cachedPage != null) {
       return cachedPage;
     }
@@ -85,12 +85,18 @@ public class ResourcePackFeed {
               this.lastPage = 0;
             }
 
-            this.callbacks.fire(page, Result.ofException(result.exception()));
+            this.callbacks.fire(page, ResourcePackPageResult.ofMessage(
+                Component.text("Something went wrong1"), page)
+            );
+
             return null;
           }
 
           if (!result.isPresent()) {
-            this.callbacks.fire(page, Result.empty());
+            this.callbacks.fire(page, ResourcePackPageResult.ofMessage(
+                Component.text("Something went wrong2"), page)
+            );
+
             return null;
           }
 
@@ -99,24 +105,27 @@ public class ResourcePackFeed {
           int size = resourcePacks.size();
           if (size == 0) {
             this.lastPage = page - 1;
-            this.callbacks.fire(page, Result.empty());
+            this.callbacks.fire(page, ResourcePackPageResult.ofMessage(
+                Component.text("Something went wrong3"), page)
+            );
+
             return;
           }
 
-          ResourcePackPage resourcePackPage = this.toPage(page, size, resourcePacks);
-          this.pages.add(resourcePackPage);
-
-          this.callbacks.fire(page, Result.of(resourcePackPage));
+          ResourcePackPageResult result = this.toPage(page, size, resourcePacks);
+          this.pages.add(result);
+          this.callbacks.fire(page, result);
         }
     );
 
     return null;
   }
 
-  protected ResourcePackPage toPage(int page, int size, List<OnlineResourcePack> resourcePacks) {
+  protected ResourcePackPageResult toPage(int page, int size,
+      List<OnlineResourcePack> resourcePacks) {
     ResourcePackPage resourcePackPage = new ResourcePackPage(page, size);
     resourcePackPage.putAll(resourcePacks);
-    return resourcePackPage;
+    return ResourcePackPageResult.of(resourcePackPage, page);
   }
 
   public String getId() {

@@ -29,6 +29,7 @@ public class ResourcePackUrls {
   public static final String CATEGORY = CATEGORIES + "%s";
 
   public static final String DOWNLOAD = BASE + "download/%s";
+  public static final String SEARCH = BASE + "search/%s";
 
   private ResourcePackUrls() {
   }

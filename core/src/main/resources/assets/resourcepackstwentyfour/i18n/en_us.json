@@ -1,5 +1,5 @@
 {
-  "resourcepacks": {
+  "resourcepackstwentyfour": {
     "settings": {
       "name": "Resourcepacks24",
       "enabled": {
@@ -7,9 +7,13 @@
       }
     },
     "browse": {
+      "button": "Browse",
       "information": {
         "invalidResponse": "We tried but Resourcepacks24 did not respond with something that we can display here. Please contact their support.",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "notEnoughCharacters": "Please enter at least 2 characters to search for.",
+        "noResult": "No results found.",
+        "Press enter to search": "Press enter to search"
       },
       "feed": {
         "trending": "Trending",

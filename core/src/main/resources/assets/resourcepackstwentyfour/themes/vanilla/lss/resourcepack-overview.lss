@@ -78,7 +78,6 @@
     top: 35%;
     alignment-x: center;
     alignment-y: center;
-    text-color: red;
     height: fit-content;
     width: 90%;
   }

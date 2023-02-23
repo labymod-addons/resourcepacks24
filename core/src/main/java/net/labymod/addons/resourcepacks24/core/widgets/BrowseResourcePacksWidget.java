@@ -19,12 +19,15 @@ package net.labymod.addons.resourcepacks24.core.widgets;
 import java.util.function.Consumer;
 import net.labymod.addons.resourcepacks24.core.ResourcePacks24;
 import net.labymod.addons.resourcepacks24.core.controller.ResourcePackFeed;
-import net.labymod.addons.resourcepacks24.core.controller.ResourcePackPage;
+import net.labymod.addons.resourcepacks24.core.controller.ResourcePackFeed.Type;
 import net.labymod.addons.resourcepacks24.core.controller.ResourcePacksController;
 import net.labymod.addons.resourcepacks24.core.controller.models.OnlineResourcePack;
 import net.labymod.addons.resourcepacks24.core.util.DownloadProcess;
+import net.labymod.addons.resourcepacks24.core.util.ResourcePackPageResult;
 import net.labymod.addons.resourcepacks24.core.widgets.resourcepack.ResourcePackWidget;
 import net.labymod.api.client.component.Component;
+import net.labymod.api.client.component.format.NamedTextColor;
+import net.labymod.api.client.component.format.TextColor;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.activity.Link;
@@ -68,21 +71,7 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
     this.feedWidget = new GridFeedWidget<>(this::refreshGrid, this.session).addId("feed");
     this.feedWidget.doRefresh(false);
 
-    this.sidebarWidget = new ResourcePackSidebarWidget(controller, newFeed -> {
-      this.feed = newFeed;
-      this.page = 1;
-
-      if (this.infoWidget != null) {
-        this.browseContainer.removeChild(this.infoWidget);
-        this.infoWidget = null;
-        this.browseContainer.getChild("scroll").setVisible(true);
-      }
-
-      this.session.setScrollPositionY(0);
-      this.feedWidget.doRefresh(false);
-      this.feedWidget.getChildren().clear();
-      this.loadPage(this.page);
-    });
+    this.sidebarWidget = new ResourcePackSidebarWidget(controller, this);
 
     this.feed = this.sidebarWidget.selectedFeed();
 
@@ -122,18 +111,20 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
   }
 
   private boolean loadPage(int page) {
-    ResourcePackPage resourcePackPage = this.feed.getOrLoadPage(page, result -> {
+    ResourcePackPageResult resourcePackPage = this.feed.getOrLoadPage(page, result -> {
       if (result.isPresent()) {
-        this.labyAPI.minecraft().executeOnRenderThread(() -> this.fillGrid(result.get()));
+        this.labyAPI.minecraft().executeOnRenderThread(() -> this.fillGrid(result));
       } else {
         if (page == 1 || this.feed.getLastPage() == 0) {
           this.labyAPI.minecraft().executeOnRenderThread(
-              () -> this.setInformationComponent("invalidResponse")
+              () -> {
+                if (this.feed.type() == Type.SEARCH) {
+                  this.setInformation("noResult", NamedTextColor.RED);
+                } else {
+                  this.setInformation("invalidResponse", NamedTextColor.RED);
+                }
+              }
           );
-        }
-
-        if (result.hasException()) {
-          result.exception().printStackTrace();
         }
       }
     });
@@ -145,41 +136,70 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
 
     if (page == 1) {
       if (this.feed.getLastPage() == 0) {
-        this.setInformationComponent("invalidResponse");
+        if (this.feed.type() == Type.SEARCH) {
+          this.setInformation("noResult", NamedTextColor.RED);
+        } else {
+          this.setInformation("invalidResponse", NamedTextColor.RED);
+        }
       } else {
-        this.setInformationComponent("loading");
+        this.setInformation("loading");
       }
     }
 
     return false;
   }
 
-  private void fillGrid(ResourcePackPage page) {
-    for (OnlineResourcePack resourcePack : page.getResourcePacks()) {
-      DownloadProcess process = this.controller.getDownloadProcess(resourcePack.getId());
-      ResourcePackWidget resourcePackWidget = new ResourcePackWidget(resourcePack);
-      resourcePackWidget.setPressable(() -> {
-        this.browseContainer.addChildInitialized(this.infoWidget = new ResourcePackInfoWidget(
-            resourcePack,
-            this.controller,
-            process,
-            () -> {
-              this.browseContainer.getChild("scroll").setVisible(true);
-              this.browseContainer.removeChild(this.infoWidget);
-              this.infoWidget = null;
-            }
-        ).addId("info-" + resourcePack.getId()));
-        this.browseContainer.getChild("scroll").setVisible(false);
-      });
+  public void selectFeed(ResourcePackFeed feed) {
+    this.feed = feed;
+    this.page = 1;
 
-      if (this.feedWidget.isInitialized()) {
-        this.feedWidget.addTileInitialized(resourcePackWidget);
-      } else {
-        this.feedWidget.addTile(resourcePackWidget);
+    if (this.infoWidget != null) {
+      this.browseContainer.removeChild(this.infoWidget);
+      this.infoWidget = null;
+      this.browseContainer.getChild("scroll").setVisible(true);
+    }
+
+    this.session.setScrollPositionY(0);
+    this.feedWidget.doRefresh(false);
+    this.feedWidget.getChildren().clear();
+    this.loadPage(this.page);
+  }
+
+  public void fillGrid(ResourcePackPageResult page) {
+    if (!page.hasMessage() && page.isPresent()) {
+      for (OnlineResourcePack resourcePack : page.get().getResourcePacks()) {
+        DownloadProcess process = this.controller.getDownloadProcess(resourcePack.getId());
+        ResourcePackWidget resourcePackWidget = new ResourcePackWidget(resourcePack);
+        resourcePackWidget.setPressable(() -> {
+          this.browseContainer.addChildInitialized(this.infoWidget = new ResourcePackInfoWidget(
+              resourcePack,
+              this.controller,
+              process,
+              () -> {
+                this.browseContainer.getChild("scroll").setVisible(true);
+                this.browseContainer.removeChild(this.infoWidget);
+                this.infoWidget = null;
+              }
+          ).addId("info-" + resourcePack.getId()));
+          this.browseContainer.getChild("scroll").setVisible(false);
+        });
+
+        if (this.feedWidget.isInitialized()) {
+          this.feedWidget.addTileInitialized(resourcePackWidget);
+        } else {
+          this.feedWidget.addTile(resourcePackWidget);
+        }
       }
     }
 
-    this.setInformationComponent(null);
+    if (page.hasMessage()) {
+      this.setInformationComponent(page.getMessage());
+    } else if (!page.isPresent()) {
+      this.setInformation("noResult", NamedTextColor.RED);
+    } else {
+      this.setInformationComponent(null);
+    }
+
     if (this.feedWidget.isInitialized()) {
       this.feedWidget.updateBounds();
     }
@@ -187,16 +207,45 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
     this.feedWidget.doRefresh(true);
   }
 
-  private void setInformationComponent(String prefix) {
+  private void setInformation(String prefix) {
+    this.setInformation(prefix, null);
+  }
+
+  private void setInformation(String prefix, TextColor color) {
     if (prefix == null) {
+      this.setInformationComponent(null);
+      return;
+    }
+
+    this.setInformationComponent(Component.translatable(
+        "resourcepackstwentyfour.browse.information." + prefix,
+        color == null ? NamedTextColor.GRAY : color
+    ));
+  }
+
+  private void setInformationComponent(Component component) {
+    if (component == null) {
       this.informationWidget.setVisible(false);
       this.informationWidget.setComponent(Component.empty());
-    } else {
-      this.informationWidget.setComponent(
-          Component.translatable("resourcepacks.browse.information." + prefix)
-      );
-
-      this.informationWidget.setVisible(true);
+      this.updateScrollVisibility(true);
+      return;
     }
+
+    this.updateScrollVisibility(false);
+    this.informationWidget.setComponent(component);
+    this.informationWidget.setVisible(true);
+  }
+
+  private void updateScrollVisibility(boolean visible) {
+    if (this.browseContainer == null) {
+      return;
+    }
+
+    Widget scroll = this.browseContainer.getChild("scroll");
+    if (scroll == null) {
+      return;
+    }
+
+    scroll.setVisible(visible);
   }
 }

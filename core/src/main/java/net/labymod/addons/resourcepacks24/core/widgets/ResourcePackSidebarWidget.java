@@ -18,11 +18,13 @@ package net.labymod.addons.resourcepacks24.core.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import net.labymod.addons.resourcepacks24.core.controller.ResourcePackCategoryFeed;
 import net.labymod.addons.resourcepacks24.core.controller.ResourcePackFeed;
+import net.labymod.addons.resourcepacks24.core.controller.ResourcePackFeed.Type;
 import net.labymod.addons.resourcepacks24.core.controller.ResourcePacksController;
+import net.labymod.addons.resourcepacks24.core.util.ResourcePackPageResult;
 import net.labymod.api.client.component.Component;
+import net.labymod.api.client.component.format.NamedTextColor;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.widget.AbstractWidget;
@@ -38,18 +40,20 @@ import net.labymod.api.util.TextFormat;
 public class ResourcePackSidebarWidget extends AbstractWidget<Widget> {
 
   private final ResourcePacksController controller;
-  private final Consumer<ResourcePackFeed> selectConsumer;
+  private final BrowseResourcePacksWidget browseWidget;
   private final List<Widget> widgets = new ArrayList<>();
   private ResourcePackFeed feed;
+  private TextFieldWidget searchWidget;
+  private long lastSearchCharTyped;
   private boolean categories;
 
   public ResourcePackSidebarWidget(
       ResourcePacksController controller,
-      Consumer<ResourcePackFeed> selectConsumer
+      BrowseResourcePacksWidget browseWidget
   ) {
     this.controller = controller;
-    this.selectConsumer = selectConsumer;
-    this.feed = controller.topOfTheWeekFeed();
+    this.browseWidget = browseWidget;
+    this.feed = this.defaultFeed();
 
     this.createSidebarWidgets();
 
@@ -75,12 +79,50 @@ public class ResourcePackSidebarWidget extends AbstractWidget<Widget> {
     this.addChild(new ScrollWidget(listWidget));
   }
 
+  private ResourcePackFeed defaultFeed() {
+    return this.controller.topOfTheWeekFeed();
+  }
+
   private void createSidebarWidgets() {
-    TextFieldWidget searchField = new TextFieldWidget();
-    searchField.addId("search");
-    searchField.placeholder(Component.translatable("labymod.ui.textfield.search"));
-    searchField.submitHandler(this::search);
-    this.widgets.add(searchField);
+    this.searchWidget = new TextFieldWidget();
+    this.searchWidget.addId("search");
+    this.searchWidget.placeholder(Component.translatable("labymod.ui.textfield.search"));
+    this.searchWidget.submitHandler(query -> this.search(query, true));
+    this.searchWidget.updateListener(query -> {
+      if (!this.searchWidget.isFocused()) {
+        return;
+      }
+
+      for (Widget widget : this.widgets) {
+        if (widget instanceof ButtonWidget) {
+          ButtonWidget button = (ButtonWidget) widget;
+          button.setEnabled(true);
+        }
+      }
+
+      if (query.length() < 2) {
+        this.browseWidget.fillGrid(ResourcePackPageResult.ofMessage(
+            Component.translatable(
+                "resourcepackstwentyfour.browse.information.notEnoughCharacters",
+                NamedTextColor.GRAY
+            ),
+            0
+        ));
+
+        return;
+      }
+
+      this.lastSearchCharTyped = System.currentTimeMillis();
+      this.browseWidget.fillGrid(ResourcePackPageResult.ofMessage(
+          Component.translatable(
+              "resourcepackstwentyfour.browse.information.loading",
+              NamedTextColor.GRAY
+          ),
+          0
+      ));
+    });
+
+    this.widgets.add(this.searchWidget);
 
     this.widgets.add(this.createFeedButton(this.controller.trendingFeed()));
     this.widgets.add(this.createFeedButton(this.controller.topOfTheWeekFeed()));
@@ -96,7 +138,7 @@ public class ResourcePackSidebarWidget extends AbstractWidget<Widget> {
 
     this.categories = true;
     this.widgets.add(
-        ComponentWidget.i18n("resourcepacks.browse.feed.splitter").addId("splitter")
+        ComponentWidget.i18n("resourcepackstwentyfour.browse.feed.splitter").addId("splitter")
     );
 
     for (ResourcePackCategoryFeed categoryFeed : categories) {
@@ -104,20 +146,45 @@ public class ResourcePackSidebarWidget extends AbstractWidget<Widget> {
     }
   }
 
-  private void search(String query) {
+  private void search(String query, boolean submit) {
+    this.lastSearchCharTyped = 0L;
+    if (query.length() == 0) {
+      if (!submit) {
+        return;
+      }
 
+      this.selectFeed(this.defaultFeed());
+      this.searchWidget.setFocused(false);
+      return;
+    }
+
+    this.selectFeed(this.controller.search(query));
   }
 
   private ButtonWidget createFeedButton(ResourcePackFeed feed) {
     String name = feed.getId();
     ButtonWidget feedButton = ButtonWidget.component(feed.displayName());
     feedButton.addId("feed-" + TextFormat.SNAKE_CASE.toDashCase(name));
-    feedButton.setPressable(() -> {
-      this.selectFeed(feed);
-    });
-    feedButton.setEnabled(this.feed != feed);
+    feedButton.setPressable(() -> this.selectFeed(feed));
 
+    feedButton.setEnabled(this.feed != feed);
     return feedButton;
+  }
+
+  @Override
+  public void tick() {
+    super.tick();
+    if (this.lastSearchCharTyped == 0L) {
+      return;
+    }
+
+    if (System.currentTimeMillis() - this.lastSearchCharTyped > 500L) {
+      if (!this.searchWidget.isFocused()) {
+        return;
+      }
+
+      this.search(this.searchWidget.getText(), false);
+    }
   }
 
   private boolean selectFeed(ResourcePackFeed feed) {
@@ -133,8 +200,14 @@ public class ResourcePackSidebarWidget extends AbstractWidget<Widget> {
       }
     }
 
+    if (feed.type() != Type.SEARCH) {
+      this.lastSearchCharTyped = 0L;
+      this.searchWidget.setText("");
+      this.searchWidget.setFocused(false);
+    }
+
     this.feed = feed;
-    this.selectConsumer.accept(feed);
+    this.browseWidget.selectFeed(feed);
     return true;
   }
 

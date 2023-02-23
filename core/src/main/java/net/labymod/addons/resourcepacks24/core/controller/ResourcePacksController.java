@@ -62,10 +62,11 @@ public class ResourcePacksController {
   private final List<ResourcePackCategoryFeed> categoryFeeds;
   private final Map<Integer, OnlineResourcePack> resourcePacks;
 
+  private final Map<String, ResourcePackFeed> searchResults;
   private final Map<Integer, DownloadProcess> downloadProcesses;
 
   public ResourcePacksController() {
-    String translationKey = "resourcepacks.browse.feed";
+    String translationKey = "resourcepackstwentyfour.browse.feed";
     this.trendingFeed = new ResourcePackFeed(
         this,
         Type.TRENDING,
@@ -104,6 +105,7 @@ public class ResourcePacksController {
     String categoryTranslationKey = translationKey + ".category";
     this.downloadProcesses = new HashMap<>();
     this.resourcePacks = new HashMap<>();
+    this.searchResults = new HashMap<>();
     this.categoryFeeds = new ArrayList<>();
     Request.ofGson(JsonArray.class)
         .url(ResourcePackUrls.CATEGORIES)
@@ -148,6 +150,16 @@ public class ResourcePacksController {
 
   public List<ResourcePackCategoryFeed> getCategoryFeeds() {
     return this.categoryFeeds;
+  }
+
+  public ResourcePackFeed search(String query) {
+    return this.searchResults.computeIfAbsent(query.toLowerCase().trim(),
+        key -> new ResourcePackUglyFeed(
+            this,
+            Type.SEARCH,
+            "resourcepackstwentyfour.browse.feed.search",
+            String.format(ResourcePackUrls.SEARCH, query)
+        ));
   }
 
   public void load(
