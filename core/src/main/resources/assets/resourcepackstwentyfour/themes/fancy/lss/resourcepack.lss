@@ -1,8 +1,4 @@
-@import super
-
-(
-)
-;
+@import super();
 
 ResourcePack {
   background-color: rgba(110, 110, 110, 50);
