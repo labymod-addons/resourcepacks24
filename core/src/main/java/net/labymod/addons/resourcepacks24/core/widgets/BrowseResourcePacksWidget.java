@@ -31,10 +31,7 @@ import net.labymod.api.client.component.format.TextColor;
 import net.labymod.api.client.gui.lss.property.annotation.AutoWidget;
 import net.labymod.api.client.gui.screen.Parent;
 import net.labymod.api.client.gui.screen.activity.Link;
-import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.client.gui.screen.widget.action.ListSession;
-import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
-import net.labymod.api.client.gui.screen.widget.widgets.DivWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.ScrollWidget;
 
@@ -50,13 +47,10 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
   private final ResourcePackSidebarWidget sidebarWidget;
   private final GridFeedWidget<ResourcePackWidget> feedWidget;
 
-  private final ComponentWidget informationWidget;
-  private DivWidget browseContainer;
+  private final BrowseResourcePacksContainerWidget containerWidget;
 
   private ResourcePackFeed feed;
   private int page = 1;
-
-  private ResourcePackInfoWidget infoWidget;
 
   public BrowseResourcePacksWidget(
       ResourcePacks24 resourcePacks,
@@ -65,7 +59,7 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
     this.resourcePacks = resourcePacks;
     this.controller = controller;
 
-    this.informationWidget = ComponentWidget.empty().addId("information");
+    this.containerWidget = new BrowseResourcePacksContainerWidget().addId("browse-container");
 
     this.session = new ListSession<>();
     this.feedWidget = new GridFeedWidget<>(this::refreshGrid, this.session).addId("feed");
@@ -83,24 +77,14 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
     super.initialize(parent);
     this.addContent(this.sidebarWidget);
 
-    this.browseContainer = new DivWidget();
-    this.browseContainer.addId("browse-container");
+    this.containerWidget.updateScroll(
+        new ScrollWidget(this.feedWidget, this.session).addId("scroll")
+    );
 
     this.page = 1;
     this.loadPage(this.page);
 
-    Widget scroll = new ScrollWidget(this.feedWidget, this.session).addId("scroll");
-    this.browseContainer.addChild(scroll);
-
-    if (this.infoWidget != null) {
-      this.browseContainer.addChild(this.infoWidget);
-      scroll.setVisible(false);
-    }
-
-    this.informationWidget.setVisible(this.informationWidget.component() != Component.empty());
-    this.browseContainer.addChild(this.informationWidget);
-
-    this.addFlexibleContent(this.browseContainer);
+    this.addFlexibleContent(this.containerWidget);
   }
 
   private boolean refreshGrid(
@@ -153,11 +137,7 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
     this.feed = feed;
     this.page = 1;
 
-    if (this.infoWidget != null) {
-      this.browseContainer.removeChild(this.infoWidget);
-      this.infoWidget = null;
-      this.browseContainer.getChild("scroll").setVisible(true);
-    }
+    this.containerWidget.showBrowse();
 
     this.session.setScrollPositionY(0);
     this.feedWidget.doRefresh(false);
@@ -170,19 +150,14 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
       for (OnlineResourcePack resourcePack : page.get().getResourcePacks()) {
         DownloadProcess process = this.controller.getDownloadProcess(resourcePack.getId());
         ResourcePackWidget resourcePackWidget = new ResourcePackWidget(resourcePack);
-        resourcePackWidget.setPressable(() -> {
-          this.browseContainer.addChildInitialized(this.infoWidget = new ResourcePackInfoWidget(
-              resourcePack,
-              this.controller,
-              process,
-              () -> {
-                this.browseContainer.getChild("scroll").setVisible(true);
-                this.browseContainer.removeChild(this.infoWidget);
-                this.infoWidget = null;
-              }
-          ).addId("info-" + resourcePack.getId()));
-          this.browseContainer.getChild("scroll").setVisible(false);
-        });
+        resourcePackWidget.setPressable(
+            () -> this.containerWidget.showInfo(new ResourcePackInfoWidget(
+                    resourcePack,
+                    this.controller,
+                    process,
+                    this.containerWidget::showBrowse
+                ).addId("info-" + resourcePack.getId())
+            ));
 
         if (this.feedWidget.isInitialized()) {
           this.feedWidget.addTileInitialized(resourcePackWidget);
@@ -225,27 +200,10 @@ public class BrowseResourcePacksWidget extends FlexibleContentWidget {
 
   private void setInformationComponent(Component component) {
     if (component == null) {
-      this.informationWidget.setVisible(false);
-      this.informationWidget.setComponent(Component.empty());
-      this.updateScrollVisibility(true);
+      this.containerWidget.hideInformation();
       return;
     }
 
-    this.updateScrollVisibility(false);
-    this.informationWidget.setComponent(component);
-    this.informationWidget.setVisible(true);
-  }
-
-  private void updateScrollVisibility(boolean visible) {
-    if (this.browseContainer == null) {
-      return;
-    }
-
-    Widget scroll = this.browseContainer.getChild("scroll");
-    if (scroll == null) {
-      return;
-    }
-
-    scroll.setVisible(visible);
+    this.containerWidget.showInformation(component);
   }
 }

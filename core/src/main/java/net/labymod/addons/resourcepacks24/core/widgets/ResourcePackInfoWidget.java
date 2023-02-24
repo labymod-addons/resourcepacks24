@@ -60,6 +60,7 @@ public class ResourcePackInfoWidget extends AbstractWidget<Widget> {
   @Override
   public void initialize(Parent parent) {
     super.initialize(parent);
+    this.children.clear();
 
     VerticalListWidget<Widget> container = new VerticalListWidget<>();
     container.addId("container");
