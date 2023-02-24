@@ -1,5 +1,5 @@
 .browse-button {
-  left: calc(50% - 205);
+  right: calc(50% + 156);
   bottom: 28;
   padding-left: 6;
   padding-right: 6;
@@ -237,6 +237,7 @@ ResourcePackInfo {
 }
 
 Scroll {
+  move-dirt-background: false;
   left: 0;
   top: 0;
   right: 0;
