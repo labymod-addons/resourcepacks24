@@ -7,6 +7,7 @@
   .inner-overlay-wrapper {
     priority-layer: very_front;
     renderer: "Background" !important;
+    top: 10;
 
     filter: blur(25);
 
