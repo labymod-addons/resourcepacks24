@@ -17,7 +17,6 @@
 package net.labymod.addons.resourcepacks24.core.widgets.renderer;
 
 import net.labymod.api.client.gui.mouse.MutableMouse;
-import net.labymod.api.client.gui.screen.theme.Theme;
 import net.labymod.api.client.gui.screen.theme.renderer.ThemeRenderer;
 import net.labymod.api.client.gui.screen.widget.AbstractWidget;
 import net.labymod.api.client.render.matrix.Stack;
@@ -25,15 +24,18 @@ import net.labymod.core.client.gui.screen.theme.fancy.renderer.background.FancyS
 
 public class FancyResourcePackBackgroundRenderer extends ThemeRenderer<AbstractWidget<?>> {
 
-  private final FancyScreenBackgroundRenderer fancyScreenBackgroundRenderer;
+  private FancyScreenBackgroundRenderer fancyScreenBackgroundRenderer;
 
-  public FancyResourcePackBackgroundRenderer(Theme theme) {
+  public FancyResourcePackBackgroundRenderer() {
     super("ResourcePackBackground");
-    this.fancyScreenBackgroundRenderer = new FancyScreenBackgroundRenderer(theme);
   }
 
   @Override
   public void renderPre(AbstractWidget<?> widget, Stack stack, MutableMouse mouse, float delta) {
+    if (this.fancyScreenBackgroundRenderer == null) {
+      this.fancyScreenBackgroundRenderer = new FancyScreenBackgroundRenderer(this.theme);
+    }
+
     this.fancyScreenBackgroundRenderer.renderBackground(stack, false);
   }
 }

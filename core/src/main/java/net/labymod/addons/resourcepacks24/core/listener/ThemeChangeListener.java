@@ -34,7 +34,7 @@ public class ThemeChangeListener {
     Theme theme = event.newTheme();
     if (theme.getId().equals("fancy") && theme instanceof AbstractTheme) {
       AbstractTheme fancyTheme = (AbstractTheme) theme;
-      fancyTheme.registerWidgetRenderer(new FancyResourcePackBackgroundRenderer(theme));
+      fancyTheme.registerWidgetRenderer(new FancyResourcePackBackgroundRenderer());
     }
   }
 }

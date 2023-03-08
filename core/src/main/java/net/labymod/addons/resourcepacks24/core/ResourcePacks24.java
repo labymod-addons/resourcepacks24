@@ -56,7 +56,7 @@ public class ResourcePacks24 extends LabyAddon<ResourcePacks24Configuration> {
     Theme fancy = this.labyAPI().themeService().getThemeByName("fancy");
     if (fancy instanceof AbstractTheme) {
       AbstractTheme fancyTheme = (AbstractTheme) fancy;
-      fancyTheme.registerWidgetRenderer(new FancyResourcePackBackgroundRenderer(fancy));
+      fancyTheme.registerWidgetRenderer(new FancyResourcePackBackgroundRenderer());
     }
   }
 
