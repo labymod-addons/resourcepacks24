@@ -1,7 +1,7 @@
 rootProject.name = "resourcepackstwentyfour"
 
 pluginManagement {
-    val labyGradlePluginVersion = "0.3.22"
+    val labyGradlePluginVersion = "0.3.21"
     plugins {
         id("net.labymod.gradle") version (labyGradlePluginVersion)
     }
