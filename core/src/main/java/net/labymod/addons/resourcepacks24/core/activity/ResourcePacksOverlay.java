@@ -140,18 +140,6 @@ public class ResourcePacksOverlay extends AbstractLayerActivity {
     return super.keyPressed(key, type);
   }
 
-  @Override
-  public <T extends LabyScreen> @Nullable T renew() {
-    ResourcePacksOverlay resourcePacksOverlay = new ResourcePacksOverlay(
-        this.parentScreen,
-        this.resourcePacks,
-        this.controller
-    );
-
-    resourcePacksOverlay.overlayVisible = this.overlayVisible;
-    return resourcePacksOverlay.generic();
-  }
-
   public void setParentScreen(ScreenInstance previousScreen) {
     this.parentScreen = previousScreen;
   }
